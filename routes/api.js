@@ -338,15 +338,29 @@ async function processRenderJob({ jobHandle, uid, assets, prompt, options, targe
   for (let pass = 1; pass <= maxPasses; pass++) {
     try {
       const rawPlan = await groq.generateEditPlan(context);
-      const { valid, errors, plan: validatedPlan } = validateEditPlan(rawPlan, {
-        assetIds: assets.map((a) => a.id),
-        maxOutputSeconds: plan.maxOutputSeconds,
-      });
+      const validationContext = { assetIds: assets.map((a) => a.id), maxOutputSeconds: plan.maxOutputSeconds };
+      const { valid, errors, plan: validatedPlan } = validateEditPlan(rawPlan, validationContext);
       if (!valid) throw new Error(`AI edit plan failed validation: ${errors.join("; ")}`);
+
+      let finalPlan = validatedPlan;
+      if (ffmpegEngine.buildTimeline(finalPlan, assetsById).length === 0) {
+        // The AI produced a structurally valid plan that nonetheless placed
+        // none of the uploaded assets on the timeline (e.g. it dropped every
+        // image instead of building a slideshow). A professional editor
+        // wouldn't hand back nothing, so fall back to a deterministic
+        // sequence of every asset in upload order rather than failing the job.
+        console.error(`[job ${jobHandle.id}] pass ${pass}/${maxPasses}: AI plan referenced no assets, using fallback sequence.`);
+        const fallbackRaw = buildFallbackPlan(validatedPlan, assets);
+        const fallbackResult = validateEditPlan(fallbackRaw, validationContext);
+        if (!fallbackResult.valid || ffmpegEngine.buildTimeline(fallbackResult.plan, assetsById).length === 0) {
+          throw new Error("Edit plan produced no renderable segments, and the fallback sequence also failed.");
+        }
+        finalPlan = fallbackResult.plan;
+      }
 
       queue.updateProgress(jobHandle.id, 45);
       const rendered = await ffmpegEngine.renderEditPlan({
-        plan: validatedPlan,
+        plan: finalPlan,
         assetsById,
         jobId: jobHandle.id,
       });
@@ -354,7 +368,7 @@ async function processRenderJob({ jobHandle, uid, assets, prompt, options, targe
 
       const qc = await groq.qualityCheck({
         durationSeconds: rendered.durationSeconds,
-        requestedDurationSeconds: validatedPlan.output.durationSeconds,
+        requestedDurationSeconds: finalPlan.output.durationSeconds,
         pass,
       }).catch(() => ({ pass: true }));
 
@@ -374,6 +388,41 @@ async function processRenderJob({ jobHandle, uid, assets, prompt, options, targe
   failure.stderr = lastError?.stderr;
   failure.userMessage = "We couldn't finish this video. Please try again.";
   throw failure;
+}
+
+const FALLBACK_IMAGE_DURATION_SECONDS = 3;
+
+/**
+ * Deterministic last-resort edit plan: every video asset as a full-length
+ * cut and every image asset as a fixed-duration slide, in upload order.
+ * Used only when the AI's own plan referenced none of the uploaded assets —
+ * keeps everything else (aspect ratio, output settings, color, audio,
+ * transitions) from the AI's plan, but drops captions since their timing
+ * was computed against a timeline that no longer exists.
+ */
+function buildFallbackPlan(basePlan, assets) {
+  const cuts = [];
+  const images = [];
+  let position = 0;
+
+  for (const asset of assets) {
+    if (asset.type === "video" && asset.durationSeconds > 0) {
+      cuts.push({ assetId: asset.id, start: 0, end: asset.durationSeconds });
+      position += 1;
+    } else if (asset.type === "image") {
+      images.push({ assetId: asset.id, insertAt: position, durationSeconds: FALLBACK_IMAGE_DURATION_SECONDS });
+      position += 1;
+    }
+  }
+
+  return {
+    ...basePlan,
+    cuts,
+    zooms: [],
+    speedChanges: [],
+    images,
+    captions: [],
+  };
 }
 
 function stripInternalPaths(asset) {
