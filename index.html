@@ -729,14 +729,19 @@ function formatBytes(bytes) {
   return `${value.toFixed(value < 10 ? 1 : 0)} ${units[unitIndex]}`;
 }
 
-// fetch() has no upload progress event — XHR is the only way to report real
-// bytes-sent progress for a file upload in the browser.
-async function uploadWithProgress(pathName, formData, onProgress) {
+const CANCELLED = Symbol("cancelled");
+const activeUploads = new Map(); // batchId -> XMLHttpRequest, so the cancel button can abort it
+
+// fetch() has no upload progress event (and no cancel-friendly API here) —
+// XHR is the only way to report real bytes-sent progress and to let the
+// user actually abort an upload in flight.
+async function uploadWithProgress(pathName, formData, { onProgress, batchId } = {}) {
   const token = state.user ? await state.user.getIdToken() : null;
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `/api${pathName}`);
     if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    if (batchId) activeUploads.set(batchId, xhr);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) onProgress(e.loaded, e.total);
     };
@@ -747,6 +752,7 @@ async function uploadWithProgress(pathName, formData, onProgress) {
       else reject(new Error(data.error || "Upload failed. Please try again."));
     };
     xhr.onerror = () => reject(new Error("Upload failed. Please check your connection and try again."));
+    xhr.onabort = () => reject(CANCELLED);
     xhr.send(formData);
   });
 }
@@ -793,9 +799,11 @@ async function handleFiles(fileList) {
     await ensureDraft();
     const form = new FormData();
     files.forEach((f) => form.append("media", f));
-    const data = await uploadWithProgress(`/drafts/${state.draftId}/media`, form, (loaded, total) => {
-      updateUploadProgressUI(batchId, loaded, total);
+    const data = await uploadWithProgress(`/drafts/${state.draftId}/media`, form, {
+      batchId,
+      onProgress: (loaded, total) => updateUploadProgressUI(batchId, loaded, total),
     });
+    activeUploads.delete(batchId);
     state.assets = data.assets;
     renderMediaGrid();
     refreshEstimate();
@@ -803,8 +811,10 @@ async function handleFiles(fileList) {
       showToastError(`Couldn't process: ${data.skipped.join(", ")}. The rest uploaded fine.`);
     }
   } catch (err) {
+    activeUploads.delete(batchId);
     state.assets = state.assets.filter((a) => a._batchId !== batchId);
     renderMediaGrid();
+    if (err === CANCELLED) return;
     showToastError(err.message);
   }
 }
@@ -832,13 +842,24 @@ function renderMediaGrid() {
       return `
     <div class="media-card" draggable="${!a._uploading}" data-index="${i}">
       <div class="badge">${a.type}</div>
-      ${!a._uploading ? `<button class="remove" data-remove="${a.id}" aria-label="Remove ${escapeHtml(a.originalName)}">${icon("close")}</button>` : ""}
+      ${
+        a._uploading
+          ? `<button class="remove" data-cancel-batch="${a._batchId}" aria-label="Cancel upload">${icon("close")}</button>`
+          : `<button class="remove" data-remove="${a.id}" aria-label="Remove ${escapeHtml(a.originalName)}">${icon("close")}</button>`
+      }
       ${preview}
       ${uploadingOverlay}
       <div class="meta">${escapeHtml(a.originalName)}${a.durationSeconds ? ` · ${Math.round(a.durationSeconds)}s` : a.sizeBytes ? ` · ${formatBytes(a.sizeBytes)}` : ""}</div>
     </div>`;
     })
     .join("");
+
+  grid.querySelectorAll("[data-cancel-batch]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const xhr = activeUploads.get(btn.dataset.cancelBatch);
+      if (xhr) xhr.abort();
+    })
+  );
 
   grid.querySelectorAll("[data-remove]").forEach((btn) =>
     btn.addEventListener("click", async () => {
