@@ -208,6 +208,11 @@
   .panel + .panel { margin-top: 18px; }
   .panel h2 { font-size: 15px; margin-bottom: 4px; }
   .panel .hint { font-size: 12.5px; margin-top: 4px; }
+  .beta-tag {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    background: var(--blue-soft); color: var(--blue-deep); border: 1px solid var(--border); border-radius: 999px;
+    padding: 2px 8px; vertical-align: middle; margin-left: 6px;
+  }
 
   .dropzone {
     margin-top: 14px; border: 1.5px dashed var(--border-strong); border-radius: var(--radius-md);
@@ -648,6 +653,36 @@ function renderCreatePage(root) {
           <button class="btn btn-primary create-cta" id="createVideoBtn">Create Video</button>
           <div class="job-status" id="jobStatus"></div>
         </div>
+
+        <div class="glass panel" id="generatePanel">
+          <h2>AI Generate <span class="beta-tag">Beta</span></h2>
+          <p class="hint">Generate brand-new AI video from a text prompt using your own free Colab GPU — one-time setup required, see <code>colab/gift_visuals_ai_generate.ipynb</code> in the repo. Free-tier reality: short clips (2-4s), lower resolution, and generation can take a few minutes.</p>
+          <div class="field" style="margin-top:12px;">
+            <label for="genServerUrl">Generation server URL</label>
+            <input id="genServerUrl" type="text" placeholder="https://xxxx.ngrok-free.app" />
+          </div>
+          <div class="field">
+            <label for="genToken">Access token</label>
+            <input id="genToken" type="password" placeholder="printed in your Colab notebook" />
+          </div>
+          <textarea class="prompt-input" id="genPrompt" placeholder="Describe the video you want AI to generate..." style="min-height:70px;"></textarea>
+          <div class="option-grid">
+            <div class="option-select">
+              <label for="genDuration">Duration</label>
+              <select id="genDuration">
+                <option value="2">2 seconds</option>
+                <option value="3">3 seconds</option>
+                <option value="4">4 seconds</option>
+              </select>
+            </div>
+            <div class="option-select">
+              <label for="genImageInput">Reference image (optional)</label>
+              <input id="genImageInput" type="file" accept="image/jpeg,image/png,image/webp" />
+            </div>
+          </div>
+          <button class="btn btn-primary create-cta" id="generateVideoBtn">Generate video</button>
+          <div id="generateStatus"></div>
+        </div>
       </div>
     </div>
   `;
@@ -710,10 +745,82 @@ function wireCreatePage() {
   );
 
   document.getElementById("createVideoBtn").addEventListener("click", handleCreateVideo);
+  document.getElementById("generateVideoBtn").addEventListener("click", handleGenerateVideo);
 
   renderMediaGrid();
   refreshEstimate();
   if (activeJobId) pollJob(activeJobId);
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Could not read the reference image."));
+    reader.readAsDataURL(file);
+  });
+}
+
+// Calls the user's own Colab-hosted generation server directly from the
+// browser — this never touches the Gift Visuals backend. See
+// colab/gift_visuals_ai_generate.ipynb for what's running on the other end.
+async function handleGenerateVideo() {
+  const statusEl = document.getElementById("generateStatus");
+  const serverUrl = document.getElementById("genServerUrl").value.trim().replace(/\/+$/, "");
+  const token = document.getElementById("genToken").value.trim();
+  const prompt = document.getElementById("genPrompt").value.trim();
+  const duration = Number(document.getElementById("genDuration").value);
+  const imageFile = document.getElementById("genImageInput").files[0];
+
+  if (!serverUrl || !token) {
+    statusEl.innerHTML = `<div class="auth-error">Paste your Colab server URL and access token first — run the notebook in colab/ and copy both from its output.</div>`;
+    return;
+  }
+  if (!prompt) {
+    statusEl.innerHTML = `<div class="auth-error">Describe what you want generated.</div>`;
+    return;
+  }
+
+  const btn = document.getElementById("generateVideoBtn");
+  btn.disabled = true;
+  const startedAt = Date.now();
+  const elapsedTimer = setInterval(() => {
+    const secs = Math.floor((Date.now() - startedAt) / 1000);
+    statusEl.innerHTML = `<p style="font-size:13px;">Generating on your Colab GPU... ${secs}s elapsed. This can take a few minutes on a free GPU.</p>`;
+  }, 1000);
+  statusEl.innerHTML = `<p style="font-size:13px;">Starting generation...</p>`;
+
+  try {
+    const imageBase64 = imageFile ? await fileToBase64(imageFile) : null;
+    const res = await fetch(`${serverUrl}/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ prompt, durationSeconds: duration, imageBase64 }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || "Generation failed. Make sure your Colab notebook is still running.");
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    clearInterval(elapsedTimer);
+    statusEl.innerHTML = `
+      <video src="${url}" controls style="width:100%; border-radius:12px; margin-top:10px;"></video>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button class="btn btn-primary" id="useGeneratedBtn" style="flex:1;">Add to my media</button>
+        <a class="btn" href="${url}" download="ai-generated.mp4" style="flex:1; text-align:center;">Download</a>
+      </div>`;
+    document.getElementById("useGeneratedBtn").addEventListener("click", () => {
+      handleFiles([new File([blob], `ai-generated-${Date.now()}.mp4`, { type: "video/mp4" })]);
+    });
+  } catch (err) {
+    clearInterval(elapsedTimer);
+    statusEl.innerHTML = `<div class="auth-error">${escapeHtml(err.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 function formatBytes(bytes) {

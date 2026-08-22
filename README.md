@@ -55,6 +55,23 @@ fresh plan on failure, capped at 2 total passes) → download.
 - **Railway builder**: the repo ships a `Dockerfile` that installs ffmpeg explicitly — Railway should auto-detect and use it. If your service was previously pinned to a different builder (Nixpacks/Railpack) in its Settings → Build, switch it to "Dockerfile" so ffmpeg actually gets installed; without it, rendering fails with `spawn ffmpeg ENOENT`.
 - **Vercel**: `vercel.json` is present for compatibility, but Vercel's serverless functions do not ship an ffmpeg binary and enforce short execution limits — actual video rendering will not work there. Railway remains the real backend, as specified.
 
+## AI Generate (Beta) — free, self-hosted video generation
+
+`colab/gift_visuals_ai_generate.ipynb` turns a free Google Colab GPU (T4) into a personal AI video generation
+server (AnimateDiff, with optional image conditioning via IP-Adapter), exposed over a free ngrok tunnel. The
+Create page's "AI Generate (Beta)" panel calls that server **directly from the browser** — it never touches
+this app's backend, so no server-side changes or costs are involved.
+
+This is real generation (new video synthesized from a prompt), not an editing effect — a genuinely different
+capability from the main AI Edit pipeline above. It is also genuinely limited by what a free GPU can do:
+short clips (2-4s), lower resolution, generation often taking a few minutes, and the Colab session
+disconnecting after a period of inactivity (just rerun the notebook and paste the new URL/token into the app
+when that happens). Treat it as a personal experimentation feature, not an always-on product feature for
+other users — free Colab is explicitly not meant to run as a persistent backend.
+
+Setup: open the notebook in Colab, set the runtime to a T4 GPU, get a free ngrok authtoken, run every cell,
+then paste the printed URL and access token into the app.
+
 ## Local development
 
 ```bash
