@@ -52,6 +52,7 @@ fresh plan on failure, capped at 2 total passes) → download.
 - **Persistence**: usage/plan/projects currently live in memory (documented in `lib/usageStore.js` and the API's draft store). They reset on server restart. Firestore wiring is the natural next step — the spec explicitly says database expansion can come later, and the code is structured so only the storage layer needs to change.
 - **The `/api/dev/set-plan` endpoint** is a deliberate, labeled stand-in for real billing (there is no payment processor yet, per spec). Lock it down or remove it once payments exist.
 - **Railway env vars**: `GROQ_API_KEY` (required), `PORT` (Railway sets this automatically), optionally `GROQ_REASONING_MODEL` / `GROQ_TRANSCRIPTION_MODEL` / `RENDER_CONCURRENCY` / `FIREBASE_PROJECT_ID`.
+- **Railway builder**: the repo ships a `Dockerfile` that installs ffmpeg explicitly — Railway should auto-detect and use it. If your service was previously pinned to a different builder (Nixpacks/Railpack) in its Settings → Build, switch it to "Dockerfile" so ffmpeg actually gets installed; without it, rendering fails with `spawn ffmpeg ENOENT`.
 - **Vercel**: `vercel.json` is present for compatibility, but Vercel's serverless functions do not ship an ffmpeg binary and enforce short execution limits — actual video rendering will not work there. Railway remains the real backend, as specified.
 
 ## Local development
@@ -61,4 +62,4 @@ npm install
 GROQ_API_KEY=your-key npm start
 ```
 
-Requires `ffmpeg`/`ffprobe` on PATH (Railway's Nixpacks build installs it via `nixpacks.toml`; install locally with your OS package manager, e.g. `apt-get install ffmpeg`).
+Requires `ffmpeg`/`ffprobe` on PATH (the included `Dockerfile` installs it for Railway; install locally with your OS package manager, e.g. `apt-get install ffmpeg`).
