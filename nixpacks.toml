@@ -1,0 +1,7 @@
+# Railway (Nixpacks) build config. The render pipeline shells out to ffmpeg/ffprobe,
+# so they must be present in the runtime image alongside Node.
+[phases.setup]
+nixPkgs = ["nodejs_20", "ffmpeg"]
+
+[start]
+cmd = "node server.js"

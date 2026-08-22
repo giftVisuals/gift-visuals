@@ -1,1 +1,1120 @@
-Claude can surely handle it 🥷
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Gift Visuals — Create Better Videos With AI</title>
+<meta name="description" content="Gift Visuals understands your footage, listens to your voice and turns your ideas into polished videos. Upload clips and photos, add a creative direction, and let AI edit like a professional." />
+<meta name="theme-color" content="#eaf2ff" />
+<link rel="canonical" href="https://giftvisuals.example.com/" />
+<link rel="icon" type="image/png" href="https://i.postimg.cc/C1bs0yZ3/file-000000002ecc820cb0bf0e4de7b100e1.png" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Gift Visuals — Create Better Videos With AI" />
+<meta property="og:description" content="Upload your videos and photos, tell the AI what you want, and Gift Visuals edits it like a professional." />
+<meta property="og:image" content="https://i.postimg.cc/C1bs0yZ3/file-000000002ecc820cb0bf0e4de7b100e1.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #eef4ff;
+    --bg-deep: #e2ecfe;
+    --surface: rgba(255, 255, 255, 0.62);
+    --surface-strong: rgba(255, 255, 255, 0.82);
+    --border: rgba(120, 155, 230, 0.28);
+    --border-strong: rgba(90, 130, 220, 0.4);
+    --text: #10182c;
+    --text-muted: #55628a;
+    --text-faint: #8792b3;
+    --blue: #2f6bff;
+    --blue-deep: #144fd6;
+    --blue-soft: #eaf1ff;
+    --glow: rgba(63, 118, 255, 0.35);
+    --shadow: 0 20px 60px -25px rgba(31, 63, 138, 0.35);
+    --radius-lg: 26px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    color: var(--text);
+    background:
+      radial-gradient(1100px 620px at 12% -8%, #dce9ff 0%, transparent 60%),
+      radial-gradient(900px 560px at 100% 0%, #e7f0ff 0%, transparent 55%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  button { font-family: inherit; }
+  h1, h2, h3, h4 { line-height: 1.15; margin: 0; letter-spacing: -0.02em; }
+  p { margin: 0; color: var(--text-muted); }
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0; padding: 0; margin: -1px;
+  }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 8px; }
+
+  .glass {
+    background: var(--surface);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .glass-strong {
+    background: var(--surface-strong);
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    border: 1px solid var(--border-strong);
+  }
+
+  #page-root { padding: 28px 20px 140px; max-width: 1180px; margin: 0 auto; }
+  @media (min-width: 900px) {
+    #page-root { padding: 40px 56px 64px 116px; }
+  }
+
+  /* ---------- Top bar (logo + auth) ---------- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1180px; margin: 0 auto; padding: 18px 20px 0;
+  }
+  @media (min-width: 900px) { .topbar { padding: 24px 56px 0 116px; } }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand img { width: 30px; height: 30px; border-radius: 9px; }
+  .brand span { font-weight: 700; font-size: 17px; color: var(--text); }
+
+  .account-slot { display: flex; align-items: center; gap: 10px; }
+  .btn {
+    appearance: none; border: 1px solid var(--border-strong); cursor: pointer;
+    border-radius: 999px; padding: 10px 18px; font-size: 14px; font-weight: 600;
+    transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, background .18s ease;
+    background: var(--surface-strong); color: var(--text);
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -14px rgba(30,60,140,.5); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary {
+    background: linear-gradient(180deg, #4a82ff, var(--blue-deep));
+    border-color: transparent; color: #fff;
+    box-shadow: 0 14px 30px -12px var(--glow);
+  }
+  .btn-ghost { background: transparent; border-color: transparent; }
+  .avatar-btn {
+    width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border-strong);
+    background: var(--surface-strong); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; overflow: hidden; padding: 0;
+  }
+  .avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ---------- Icon-first nav ---------- */
+  .nav {
+    position: fixed; z-index: 60;
+    display: flex; gap: 8px;
+    padding: 10px; border-radius: 999px;
+  }
+  .nav-desktop {
+    left: 22px; top: 50%; transform: translateY(-50%);
+    flex-direction: column;
+    display: none;
+  }
+  .nav-mobile {
+    left: 50%; bottom: 18px; transform: translateX(-50%);
+    flex-direction: row;
+  }
+  @media (min-width: 900px) {
+    .nav-desktop { display: flex; }
+    .nav-mobile { display: none; }
+  }
+  .nav-item {
+    position: relative; display: flex; align-items: center; gap: 8px;
+    border: none; background: transparent; color: var(--text-muted);
+    border-radius: 999px; cursor: pointer; padding: 12px; overflow: hidden;
+    width: 44px; white-space: nowrap;
+    transition: width .42s cubic-bezier(.16,.9,.2,1), background .3s ease, color .3s ease, box-shadow .3s ease;
+  }
+  .nav-item svg { flex: none; width: 20px; height: 20px; }
+  .nav-item .label {
+    font-size: 13.5px; font-weight: 600; opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity .28s ease .06s, transform .32s ease .06s;
+  }
+  .nav-item.active {
+    width: 132px; color: var(--blue-deep);
+    background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(235,243,255,.85));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 10px 22px -14px var(--glow);
+  }
+  .nav-item.active .label { opacity: 1; transform: translateX(0); }
+  .nav-item:hover:not(.active) { color: var(--blue); background: rgba(255,255,255,.5); }
+  .nav-tooltip {
+    position: absolute; left: 52px; top: 50%; transform: translateY(-50%);
+    background: #10182c; color: #fff; font-size: 12px; padding: 5px 9px; border-radius: 8px;
+    white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s ease;
+  }
+  .nav-item:hover .nav-tooltip, .nav-item:focus-visible .nav-tooltip { opacity: 1; }
+  .nav-mobile .nav-tooltip { display: none; }
+
+  /* ---------- Landing ---------- */
+  .hero { text-align: center; padding: 48px 12px 20px; max-width: 780px; margin: 0 auto; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase; color: var(--blue-deep);
+    background: var(--blue-soft); border: 1px solid var(--border); padding: 7px 14px; border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  .hero h1 { font-size: clamp(32px, 5.5vw, 56px); }
+  .hero p.lead { margin-top: 18px; font-size: 17px; line-height: 1.6; }
+  .hero-ctas { display: flex; gap: 12px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+  .hero-ctas .btn { padding: 13px 26px; font-size: 15px; }
+
+  .feature-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px;
+    margin-top: 56px;
+  }
+  .feature-card { border-radius: var(--radius-md); padding: 22px; }
+  .feature-card .icon-badge {
+    width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #eaf1ff, #dce8ff); color: var(--blue-deep); margin-bottom: 14px;
+  }
+  .feature-card h3 { font-size: 15.5px; margin-bottom: 6px; }
+  .feature-card p { font-size: 13.5px; }
+
+  .flow-strip {
+    margin-top: 64px; border-radius: var(--radius-lg); padding: 30px 24px;
+    display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; align-items: center;
+  }
+  .flow-step { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 96px; text-align: center; }
+  .flow-step .num {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+  }
+  .flow-step span.label { font-size: 12.5px; color: var(--text-muted); font-weight: 600; }
+  .flow-arrow { color: var(--text-faint); }
+
+  section.section-block { margin-top: 64px; }
+  .section-head { max-width: 560px; margin: 0 auto 28px; text-align: center; }
+  .section-head h2 { font-size: clamp(24px, 3.4vw, 32px); }
+  .section-head p { margin-top: 10px; }
+
+  /* ---------- Page header (app pages) ---------- */
+  .page-head { margin-bottom: 26px; }
+  .page-head h1 { font-size: 26px; }
+  .page-head p { margin-top: 6px; font-size: 14.5px; }
+
+  /* ---------- Create workspace ---------- */
+  .create-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 980px) { .create-grid { grid-template-columns: 1.5fr 1fr; align-items: start; } }
+  .panel { border-radius: var(--radius-lg); padding: 22px; }
+  .panel + .panel { margin-top: 18px; }
+  .panel h2 { font-size: 15px; margin-bottom: 4px; }
+  .panel .hint { font-size: 12.5px; margin-top: 4px; }
+
+  .dropzone {
+    margin-top: 14px; border: 1.5px dashed var(--border-strong); border-radius: var(--radius-md);
+    padding: 34px 16px; text-align: center; cursor: pointer; transition: background .2s ease, border-color .2s ease;
+  }
+  .dropzone:hover, .dropzone.drag-over { background: var(--blue-soft); border-color: var(--blue); }
+  .dropzone svg { color: var(--blue); margin-bottom: 10px; }
+  .dropzone .dz-title { font-weight: 600; font-size: 14.5px; }
+  .dropzone .dz-sub { font-size: 12.5px; margin-top: 4px; }
+
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 12px; margin-top: 16px; }
+  .media-card {
+    position: relative; border-radius: var(--radius-sm); overflow: hidden; aspect-ratio: 3/4;
+    background: #dbe6fb; border: 1px solid var(--border); cursor: grab;
+  }
+  .media-card.dragging { opacity: .4; }
+  .media-card .thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .media-card .badge {
+    position: absolute; top: 6px; left: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    background: rgba(16,24,44,.68); color: #fff; padding: 3px 7px; border-radius: 6px; letter-spacing: .03em;
+  }
+  .media-card .remove {
+    position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(16,24,44,.68); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .media-card .meta {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 8px;
+    background: linear-gradient(0deg, rgba(0,0,0,.62), transparent); color: #fff; font-size: 10.5px;
+  }
+
+  textarea.prompt-input {
+    width: 100%; margin-top: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-strong);
+    background: rgba(255,255,255,.75); padding: 14px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 96px; color: var(--text);
+  }
+  textarea.prompt-input:focus { background: #fff; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; padding: 7px 12px;
+    border-radius: 999px; border: 1px solid var(--border-strong); background: rgba(255,255,255,.7); cursor: pointer; color: var(--text-muted);
+  }
+  .chip:hover { color: var(--blue-deep); border-color: var(--blue); }
+
+  .option-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 14px; }
+  .option-select label, .option-toggle span.opt-label { font-size: 12.5px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; }
+  .option-select select {
+    width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong);
+    background: rgba(255,255,255,.75); font-size: 13.5px; color: var(--text);
+  }
+  .option-toggle {
+    display: flex; align-items: center; justify-content: space-between; padding: 10px 12px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: rgba(255,255,255,.6);
+  }
+  .switch { position: relative; width: 40px; height: 23px; flex: none; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .track { position: absolute; inset: 0; background: #cbd6ee; border-radius: 999px; transition: background .2s ease; cursor: pointer; }
+  .switch .track::before {
+    content: ""; position: absolute; width: 17px; height: 17px; left: 3px; top: 3px; background: #fff; border-radius: 50%;
+    transition: transform .22s cubic-bezier(.2,.8,.2,1); box-shadow: 0 1px 3px rgba(0,0,0,.25);
+  }
+  .switch input:checked + .track { background: var(--blue); }
+  .switch input:checked + .track::before { transform: translateX(17px); }
+
+  .estimate-box { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: var(--radius-md); background: var(--blue-soft); margin-top: 16px; }
+  .estimate-box .num { font-size: 20px; font-weight: 800; color: var(--blue-deep); }
+  .estimate-box .unit-label { font-size: 12px; color: var(--text-muted); }
+
+  .create-cta { width: 100%; margin-top: 16px; padding: 15px; font-size: 15px; border-radius: var(--radius-md); }
+
+  .job-status { margin-top: 18px; }
+  .progress-bar { height: 8px; border-radius: 999px; background: #dbe6fb; overflow: hidden; margin-top: 10px; }
+  .progress-bar > div { height: 100%; background: linear-gradient(90deg, #4a82ff, var(--blue-deep)); transition: width .4s ease; }
+
+  /* ---------- Auth modal ---------- */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(16,24,44,.38); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+  }
+  .modal { width: 100%; max-width: 400px; border-radius: var(--radius-lg); padding: 30px 26px; position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; color: var(--text-faint); }
+  .modal h2 { font-size: 20px; text-align: center; }
+  .modal p.sub { text-align: center; margin-top: 6px; font-size: 13.5px; }
+  .field { margin-top: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+  .field input {
+    width: 100%; padding: 11px 13px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong);
+    background: rgba(255,255,255,.8); font-size: 14px; color: var(--text);
+  }
+  .field input:focus { background: #fff; }
+  .auth-submit { width: 100%; margin-top: 18px; padding: 12px; border-radius: var(--radius-md); }
+  .auth-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; color: var(--text-faint); font-size: 12px; }
+  .auth-divider::before, .auth-divider::after { content: ""; flex: 1; height: 1px; background: var(--border-strong); }
+  .google-btn { width: 100%; padding: 11px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .auth-switch { text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-muted); }
+  .auth-switch button { background: none; border: none; color: var(--blue); font-weight: 600; cursor: pointer; padding: 0; }
+  .auth-error { margin-top: 12px; font-size: 13px; color: #c23434; background: #fdecec; border: 1px solid #f4c6c6; padding: 9px 12px; border-radius: 10px; }
+  .auth-note { margin-top: 12px; font-size: 12.5px; color: #1c7a45; background: #e9f9ef; border: 1px solid #c8ecd6; padding: 9px 12px; border-radius: 10px; }
+
+  /* ---------- Profile / Plans / Projects ---------- */
+  .tab-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 9px 16px; border-radius: 999px; border: 1px solid var(--border-strong); background: rgba(255,255,255,.6);
+    font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--text-muted);
+  }
+  .tab-btn.active { background: linear-gradient(180deg, #4a82ff, var(--blue-deep)); color: #fff; border-color: transparent; }
+
+  .profile-header { display: flex; align-items: center; gap: 16px; padding: 22px; border-radius: var(--radius-lg); }
+  .profile-header .avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: var(--blue-soft); display: flex; align-items: center; justify-content: center; color: var(--blue-deep); overflow: hidden; }
+  .profile-header .avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+  .profile-header h2 { font-size: 18px; }
+  .profile-header p { font-size: 13px; margin-top: 2px; }
+
+  .info-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .k { font-size: 13px; color: var(--text-muted); }
+  .info-row .v { font-size: 14px; font-weight: 600; }
+  .link-btn { background: none; border: none; color: var(--blue); font-weight: 600; font-size: 13px; cursor: pointer; }
+
+  .usage-meter { margin-top: 8px; }
+  .usage-meter .bar { height: 10px; border-radius: 999px; background: #dbe6fb; overflow: hidden; margin-top: 8px; }
+  .usage-meter .bar > div { height: 100%; background: linear-gradient(90deg, #4a82ff, var(--blue-deep)); }
+
+  .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 8px; }
+  .plan-card { border-radius: var(--radius-lg); padding: 22px; position: relative; }
+  .plan-card.current { border: 1.5px solid var(--blue); }
+  .plan-card .tag { position: absolute; top: -10px; right: 18px; background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .plan-card h3 { font-size: 18px; }
+  .plan-card .plan-limit { margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+  .plan-card .plan-limit b { color: var(--text); }
+  .plan-card ul { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-direction: column; gap: 8px; }
+  .plan-card li { font-size: 13px; color: var(--text-muted); display: flex; gap: 8px; align-items: flex-start; }
+  .plan-card .btn { width: 100%; margin-top: 16px; text-align: center; }
+
+  .empty-state { text-align: center; padding: 60px 20px; border-radius: var(--radius-lg); }
+  .empty-state svg { color: var(--text-faint); margin-bottom: 14px; }
+  .empty-state h3 { font-size: 16px; }
+  .empty-state p { margin-top: 6px; font-size: 13.5px; }
+
+  .billing-note { font-size: 13px; margin-top: 10px; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: rgba(90,130,220,.3); border-radius: 999px; }
+</style>
+
+<div class="topbar">
+  <a href="/" class="brand" data-link>
+    <img src="https://i.postimg.cc/C1bs0yZ3/file-000000002ecc820cb0bf0e4de7b100e1.png" alt="Gift Visuals logo" />
+    <span>Gift Visuals</span>
+  </a>
+  <div class="account-slot" id="accountSlot"></div>
+</div>
+
+<nav class="nav nav-desktop glass" id="navDesktop" aria-label="Primary"></nav>
+<nav class="nav nav-mobile glass" id="navMobile" aria-label="Primary"></nav>
+
+<main id="page-root"></main>
+<div id="modalRoot"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signInWithPopup, GoogleAuthProvider, signOut, sendPasswordResetEmail, updateProfile,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-MiLGZ8C_pka8IZT47kuG1rVNSB4AdY0",
+  authDomain: "gift-visuals.firebaseapp.com",
+  projectId: "gift-visuals",
+  storageBucket: "gift-visuals.firebasestorage.app",
+  messagingSenderId: "738256288072",
+  appId: "1:738256288072:web:9e3d97c2fa36aa5d3b9b7d",
+};
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+
+/* ---------------------------------------------------------------------- */
+/* Icons                                                                   */
+/* ---------------------------------------------------------------------- */
+const ICONS = {
+  home: '<path d="M3 11.5 12 4l9 7.5" /><path d="M5.5 10v9.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V10" />',
+  create: '<rect x="3" y="6" width="13" height="12" rx="2.2"/><path d="m21 8.2-4.5 3 4.5 3z"/>',
+  projects: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h5A1.5 1.5 0 0 1 16 5.5V7"/>',
+  plans: '<path d="M12 3v18M7 7.5c0-1.4 2-2.5 5-2.5s5 1.1 5 2.5-2 2.5-5 2.5-5 1.1-5 2.5 2 2.5 5 2.5 5 1.1 5 2.5-2 2.5-5 2.5-5-1.1-5-2.5"/>',
+  profile: '<circle cx="12" cy="8.2" r="3.6"/><path d="M4.5 19.2c1.3-3.4 4.2-5.2 7.5-5.2s6.2 1.8 7.5 5.2"/>',
+  upload: '<path d="M12 16V4M7 8.5 12 4l5 4.5"/><path d="M4 16.5v2A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-2"/>',
+  video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m21 8.2-4.5 3 4.5 3z"/>',
+  image: '<rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="8.3" cy="9.8" r="1.6"/><path d="m4 17 5-5 3.5 3.5L16 12l4 5"/>',
+  trash: '<path d="M4.5 7h15M9.5 7V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2m-8 0 .8 12a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7"/>',
+  google: '<path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1a6.2 6.2 0 1 1 0-12.4c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 3.1 14.7 2.1 12 2.1 6.9 2.1 2.8 6.2 2.8 11.3S6.9 20.5 12 20.5c6.9 0 8.9-4.8 8.9-7.3 0-.5-.05-.9-.13-1.3z"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
+  billing: '<rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="M3 10h18"/><path d="M7 14.5h4"/>',
+};
+function icon(name, cls = "") {
+  return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
+}
+
+/* ---------------------------------------------------------------------- */
+/* API helper                                                              */
+/* ---------------------------------------------------------------------- */
+async function api(pathName, { method = "GET", body, isForm = false } = {}) {
+  const headers = {};
+  if (state.user) headers.Authorization = `Bearer ${await state.user.getIdToken()}`;
+  if (!isForm && body !== undefined) headers["Content-Type"] = "application/json";
+  const res = await fetch(`/api${pathName}`, {
+    method,
+    headers,
+    body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(data.error || "Something went wrong. Please try again.");
+    err.code = data.code;
+    throw err;
+  }
+  return data;
+}
+
+/* ---------------------------------------------------------------------- */
+/* App state + router                                                     */
+/* ---------------------------------------------------------------------- */
+const state = {
+  user: null,
+  usage: null,
+  draftId: null,
+  assets: [],
+  jobPollHandle: null,
+};
+
+const ROUTES = [
+  { path: "/", label: "Home", icon: "home", public: true },
+  { path: "/create", label: "Create", icon: "create", public: true },
+  { path: "/projects", label: "Projects", icon: "projects", public: true },
+  { path: "/plans", label: "Plans", icon: "plans", public: true },
+  { path: "/profile", label: "Profile", icon: "profile", public: true },
+];
+
+function renderNav() {
+  const current = location.pathname;
+  const itemsHtml = ROUTES.map(
+    (r) => `
+    <button class="nav-item ${r.path === current ? "active" : ""}" data-link href="${r.path}" aria-current="${r.path === current ? "page" : "false"}">
+      ${icon(r.icon)}<span class="label">${r.label}</span>
+      <span class="nav-tooltip">${r.label}</span>
+    </button>`
+  ).join("");
+  document.getElementById("navDesktop").innerHTML = itemsHtml;
+  document.getElementById("navMobile").innerHTML = itemsHtml;
+}
+
+function renderAccountSlot() {
+  const el = document.getElementById("accountSlot");
+  if (state.user) {
+    const initial = (state.user.displayName || state.user.email || "?")[0].toUpperCase();
+    el.innerHTML = `
+      <button class="avatar-btn" data-link href="/profile" title="Profile">
+        ${state.user.photoURL ? `<img src="${state.user.photoURL}" alt="" />` : initial}
+      </button>`;
+  } else {
+    el.innerHTML = `<button class="btn btn-primary" id="signInTop">Sign in</button>`;
+    document.getElementById("signInTop").onclick = () => openAuthModal("login");
+  }
+}
+
+function navigate(path, { replace = false } = {}) {
+  if (replace) history.replaceState({}, "", path);
+  else history.pushState({}, "", path);
+  render();
+}
+
+document.addEventListener("click", (e) => {
+  const link = e.target.closest("[data-link]");
+  if (!link) return;
+  e.preventDefault();
+  navigate(link.getAttribute("href"));
+});
+window.addEventListener("popstate", render);
+
+function render() {
+  renderNav();
+  renderAccountSlot();
+  const path = location.pathname;
+  const root = document.getElementById("page-root");
+  if (path === "/create") return renderCreatePage(root);
+  if (path === "/projects") return renderProjectsPage(root);
+  if (path === "/plans") return renderPlansPage(root);
+  if (path === "/profile") return renderProfilePage(root);
+  return renderHomePage(root);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Home / landing                                                          */
+/* ---------------------------------------------------------------------- */
+function renderHomePage(root) {
+  root.innerHTML = `
+    <section class="hero">
+      <span class="eyebrow">${icon("spark")} AI Video Editing</span>
+      <h1>Create Better Videos With AI.</h1>
+      <p class="lead">Gift Visuals understands your footage, listens to your voice and turns your ideas into polished videos.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-primary" data-link href="/create">Start Creating</button>
+        <button class="btn" data-link href="/plans">Explore Gift Visuals</button>
+      </div>
+    </section>
+
+    <div class="flow-strip glass">
+      ${["Upload", "AI Listens", "AI Analyzes", "Edit Plan", "Render", "Quality Check", "Final Video"]
+        .map(
+          (label, i, arr) => `
+        <div class="flow-step">
+          <div class="num">${i + 1}</div>
+          <span class="label">${label}</span>
+        </div>
+        ${i < arr.length - 1 ? `<span class="flow-arrow">${icon("spark")}</span>` : ""}
+      `
+        )
+        .join("")}
+    </div>
+
+    <section class="section-block">
+      <div class="section-head">
+        <h2>An editor that thinks like a professional</h2>
+        <p>Gift Visuals doesn't apply random transitions — it decides when an effect actually improves the video.</p>
+      </div>
+      <div class="feature-grid">
+        ${featureCard("video", "Smart cuts", "Removes dead air and silence, finds sentence boundaries, and keeps only what matters.")}
+        ${featureCard("spark", "Voice understanding", "Transcribes speech to time captions, emphasis and cuts to what's actually being said.")}
+        ${featureCard("image", "Video + photos together", "Blend clips and photos into one timeline — Gift Visuals places your images as intentional B-roll.")}
+        ${featureCard("create", "Captions & emphasis", "Clean, readable captions burned in with emphasis on key words and moments.")}
+        ${featureCard("plans", "Cinematic or social pacing", "Choose a style, or let the AI pick pacing suited to the footage automatically.")}
+        ${featureCard("upload", "HD rendering", "Final output rendered in HD (up to 4K on Max), ready to share.")}
+      </div>
+    </section>
+
+    <section class="section-block">
+      <div class="glass panel" style="text-align:center; padding: 40px 24px;">
+        <h2 style="font-size:22px;">Bring your own footage. Let AI do the editing.</h2>
+        <p style="margin-top:10px; max-width:520px; margin-left:auto; margin-right:auto;">Upload videos and photos, optionally tell Gift Visuals what you want, and get a professionally edited video back.</p>
+        <div class="hero-ctas"><button class="btn btn-primary" data-link href="/create">Start Creating</button></div>
+      </div>
+    </section>
+  `;
+}
+function featureCard(iconName, title, desc) {
+  return `<div class="glass feature-card"><div class="icon-badge">${icon(iconName)}</div><h3>${title}</h3><p>${desc}</p></div>`;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Create workspace                                                        */
+/* ---------------------------------------------------------------------- */
+const EDITING_OPTIONS_DEFAULT = {
+  style: "ai-decide", aspectRatio: "original",
+  captions: true, smartCuts: true, aiMotion: true, voiceEnhancement: false, music: false, soundEffects: false,
+};
+let createOptions = { ...EDITING_OPTIONS_DEFAULT };
+let createPrompt = "";
+let activeJobId = null;
+
+function renderCreatePage(root) {
+  root.innerHTML = `
+    <div class="page-head">
+      <h1>Create</h1>
+      <p>Upload your media, tell Gift Visuals what you want, and let AI edit it like a professional.</p>
+    </div>
+    <div class="create-grid">
+      <div>
+        <div class="glass panel">
+          <h2>Upload media</h2>
+          <p class="hint">Video and photos together — Gift Visuals treats them as one media collection.</p>
+          <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload media">
+            ${icon("upload")}
+            <div class="dz-title">Drop videos and photos here, or click to browse</div>
+            <div class="dz-sub">MP4, MOV, WebM, JPG, PNG, WebP</div>
+          </div>
+          <input type="file" id="fileInput" multiple accept="video/mp4,video/quicktime,video/webm,video/x-matroska,image/jpeg,image/png,image/webp" style="display:none" />
+          <div class="media-grid" id="mediaGrid"></div>
+        </div>
+
+        <div class="glass panel">
+          <h2>Creative direction</h2>
+          <p class="hint">Optional — Gift Visuals will choose a professional style automatically if left blank.</p>
+          <textarea class="prompt-input" id="promptInput" placeholder="Tell Gift Visuals what you want the final video to feel like...">${escapeHtml(createPrompt)}</textarea>
+          <div class="chip-row">
+            ${["Cinematic", "Viral social edit", "Clean corporate", "Fast-paced", "Storytelling", "Product showcase"]
+              .map((s) => `<button class="chip" type="button" data-suggest="${s}">${icon("spark")}${s}</button>`)
+              .join("")}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="glass panel">
+          <h2>Editing preferences</h2>
+          <div class="option-grid">
+            <div class="option-select">
+              <label for="styleSelect">Editing style</label>
+              <select id="styleSelect">
+                <option value="ai-decide">AI decides</option>
+                <option value="social">Social</option>
+                <option value="cinematic">Cinematic</option>
+                <option value="fast-paced">Fast-paced</option>
+                <option value="professional">Professional</option>
+              </select>
+            </div>
+            <div class="option-select">
+              <label for="aspectSelect">Aspect ratio</label>
+              <select id="aspectSelect">
+                <option value="original">Original</option>
+                <option value="16:9">16:9</option>
+                <option value="9:16">9:16</option>
+                <option value="1:1">1:1</option>
+              </select>
+            </div>
+          </div>
+          <div class="option-grid">
+            ${toggleRow("captions", "Captions")}
+            ${toggleRow("smartCuts", "Smart cuts")}
+            ${toggleRow("aiMotion", "AI motion")}
+            ${toggleRow("voiceEnhancement", "Voice enhancement")}
+            ${toggleRow("music", "Music")}
+            ${toggleRow("soundEffects", "Sound effects")}
+          </div>
+        </div>
+
+        <div class="glass panel">
+          <h2>AI usage estimate</h2>
+          <div class="estimate-box">
+            <div><div class="num" id="estimateUnits">—</div><div class="unit-label">AI usage units</div></div>
+            <div style="text-align:right"><div class="num" id="estimateRemaining" style="font-size:15px;">—</div><div class="unit-label">remaining this week</div></div>
+          </div>
+          <button class="btn btn-primary create-cta" id="createVideoBtn">Create Video</button>
+          <div class="job-status" id="jobStatus"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  wireCreatePage();
+}
+
+function toggleRow(key, label) {
+  return `
+    <label class="option-toggle">
+      <span class="opt-label">${label}</span>
+      <span class="switch">
+        <input type="checkbox" data-option="${key}" ${createOptions[key] ? "checked" : ""} />
+        <span class="track"></span>
+      </span>
+    </label>`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+async function ensureDraft() {
+  if (!state.user) return null;
+  if (!state.draftId) {
+    const { draftId } = await api("/drafts", { method: "POST" });
+    state.draftId = draftId;
+  }
+  return state.draftId;
+}
+
+function wireCreatePage() {
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  dropzone.addEventListener("click", () => fileInput.click());
+  dropzone.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") fileInput.click(); });
+  ["dragenter", "dragover"].forEach((evt) =>
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add("drag-over"); })
+  );
+  ["dragleave", "drop"].forEach((evt) =>
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.remove("drag-over"); })
+  );
+  dropzone.addEventListener("drop", (e) => handleFiles(e.dataTransfer.files));
+  fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
+
+  document.getElementById("promptInput").addEventListener("input", (e) => { createPrompt = e.target.value; });
+  document.querySelectorAll("[data-suggest]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      createPrompt = `Make this feel ${btn.dataset.suggest.toLowerCase()}.`;
+      document.getElementById("promptInput").value = createPrompt;
+    })
+  );
+
+  document.getElementById("styleSelect").value = createOptions.style;
+  document.getElementById("aspectSelect").value = createOptions.aspectRatio;
+  document.getElementById("styleSelect").addEventListener("change", (e) => { createOptions.style = e.target.value; });
+  document.getElementById("aspectSelect").addEventListener("change", (e) => { createOptions.aspectRatio = e.target.value; refreshEstimate(); });
+  document.querySelectorAll("[data-option]").forEach((input) =>
+    input.addEventListener("change", (e) => { createOptions[e.target.dataset.option] = e.target.checked; refreshEstimate(); })
+  );
+
+  document.getElementById("createVideoBtn").addEventListener("click", handleCreateVideo);
+
+  renderMediaGrid();
+  refreshEstimate();
+  if (activeJobId) pollJob(activeJobId);
+}
+
+async function handleFiles(fileList) {
+  const files = Array.from(fileList || []);
+  if (files.length === 0) return;
+
+  if (!state.user) {
+    state.assets.push(...files.map((f) => ({
+      id: `local-${Math.random().toString(36).slice(2)}`, type: f.type.startsWith("image") ? "image" : "video",
+      originalName: f.name, sizeBytes: f.size, _localOnly: true, previewUrl: URL.createObjectURL(f),
+    })));
+    renderMediaGrid();
+    return;
+  }
+
+  try {
+    await ensureDraft();
+    const form = new FormData();
+    files.forEach((f) => form.append("media", f));
+    const data = await api(`/drafts/${state.draftId}/media`, { method: "POST", body: form, isForm: true });
+    state.assets = data.assets;
+    renderMediaGrid();
+    refreshEstimate();
+  } catch (err) {
+    showToastError(err.message);
+  }
+}
+
+function renderMediaGrid() {
+  const grid = document.getElementById("mediaGrid");
+  if (!grid) return;
+  if (state.assets.length === 0) {
+    grid.innerHTML = "";
+    return;
+  }
+  grid.innerHTML = state.assets
+    .map(
+      (a, i) => `
+    <div class="media-card" draggable="true" data-index="${i}">
+      <div class="badge">${a.type}</div>
+      <button class="remove" data-remove="${a.id}" aria-label="Remove ${escapeHtml(a.originalName)}">${icon("close")}</button>
+      ${a.type === "image" && a.previewUrl ? `<img class="thumb" src="${a.previewUrl}" alt="" />` : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;">${icon(a.type === "video" ? "video" : "image")}</div>`}
+      <div class="meta">${escapeHtml(a.originalName)}${a.durationSeconds ? ` · ${Math.round(a.durationSeconds)}s` : ""}</div>
+    </div>`
+    )
+    .join("");
+
+  grid.querySelectorAll("[data-remove]").forEach((btn) =>
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.remove;
+      const asset = state.assets.find((a) => a.id === id);
+      state.assets = state.assets.filter((a) => a.id !== id);
+      renderMediaGrid();
+      refreshEstimate();
+      if (state.user && asset && !asset._localOnly) {
+        await api(`/drafts/${state.draftId}/media/${id}`, { method: "DELETE" }).catch(() => {});
+      }
+    })
+  );
+
+  let dragSrc = null;
+  grid.querySelectorAll(".media-card").forEach((card) => {
+    card.addEventListener("dragstart", () => { dragSrc = Number(card.dataset.index); card.classList.add("dragging"); });
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+    card.addEventListener("dragover", (e) => e.preventDefault());
+    card.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      const dest = Number(card.dataset.index);
+      if (dragSrc === null || dragSrc === dest) return;
+      const [moved] = state.assets.splice(dragSrc, 1);
+      state.assets.splice(dest, 0, moved);
+      renderMediaGrid();
+      if (state.user && state.draftId) {
+        await api(`/drafts/${state.draftId}/reorder`, { method: "POST", body: { order: state.assets.map((a) => a.id) } }).catch(() => {});
+      }
+    });
+  });
+}
+
+let estimateDebounce = null;
+function refreshEstimate() {
+  clearTimeout(estimateDebounce);
+  estimateDebounce = setTimeout(async () => {
+    const unitsEl = document.getElementById("estimateUnits");
+    const remainingEl = document.getElementById("estimateRemaining");
+    if (!unitsEl) return;
+    if (!state.user || !state.draftId || state.assets.length === 0) {
+      unitsEl.textContent = "—";
+      remainingEl.textContent = state.usage ? state.usage.remainingUnits : "—";
+      return;
+    }
+    try {
+      const data = await api(`/drafts/${state.draftId}/estimate`, { method: "POST", body: { options: createOptions } });
+      unitsEl.textContent = data.estimate.totalUnits;
+      remainingEl.textContent = data.remainingUnits;
+    } catch {
+      unitsEl.textContent = "—";
+    }
+  }, 300);
+}
+
+async function handleCreateVideo() {
+  if (!state.user) return openAuthModal("signup", "Create a free account to start editing.");
+  if (state.assets.length === 0) return showToastError("Upload at least one video or photo first.");
+
+  const statusEl = document.getElementById("jobStatus");
+  try {
+    await ensureDraft();
+    const { jobId } = await api(`/drafts/${state.draftId}/render`, {
+      method: "POST",
+      body: { prompt: createPrompt, options: createOptions, targetAspectRatio: createOptions.aspectRatio },
+    });
+    activeJobId = jobId;
+    pollJob(jobId);
+  } catch (err) {
+    statusEl.innerHTML = `<div class="auth-error">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function pollJob(jobId) {
+  clearInterval(state.jobPollHandle);
+  const statusEl = document.getElementById("jobStatus");
+  if (!statusEl) return;
+
+  const tick = async () => {
+    try {
+      const job = await api(`/jobs/${jobId}`);
+      if (!document.getElementById("jobStatus")) return;
+      if (job.status === "failed") {
+        clearInterval(state.jobPollHandle);
+        statusEl.innerHTML = `<div class="auth-error">${escapeHtml(job.error)}</div>`;
+        return;
+      }
+      if (job.status === "completed") {
+        clearInterval(state.jobPollHandle);
+        statusEl.innerHTML = `
+          <div class="auth-note">Your video is ready.</div>
+          <a class="btn btn-primary" style="display:block;text-align:center;margin-top:10px;" href="/api/jobs/${jobId}/download">Download video</a>`;
+        refreshUsage();
+        return;
+      }
+      statusEl.innerHTML = `
+        <p style="font-size:13px;">${job.status === "queued" ? "Queued — waiting for a processing slot..." : "Gift Visuals is editing your video..."}</p>
+        <div class="progress-bar"><div style="width:${job.progress}%"></div></div>`;
+    } catch {
+      clearInterval(state.jobPollHandle);
+    }
+  };
+  tick();
+  state.jobPollHandle = setInterval(tick, 2500);
+}
+
+function showToastError(msg) {
+  const statusEl = document.getElementById("jobStatus");
+  if (statusEl) statusEl.innerHTML = `<div class="auth-error">${escapeHtml(msg)}</div>`;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Projects                                                                 */
+/* ---------------------------------------------------------------------- */
+function renderProjectsPage(root) {
+  root.innerHTML = `
+    <div class="page-head"><h1>Projects</h1><p>Your rendered videos will appear here.</p></div>
+    <div class="empty-state glass">
+      ${icon("projects")}
+      <h3>No projects yet</h3>
+      <p>Create your first AI-edited video to see it here.</p>
+      <button class="btn btn-primary" data-link href="/create" style="margin-top:16px;">Start Creating</button>
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Plans                                                                    */
+/* ---------------------------------------------------------------------- */
+function renderPlansPage(root) {
+  const plans = [
+    { id: "free", name: "Free", price: "$0", limit: 5, features: ["5 combined uploads", "Standard queue priority", "720p output", "Weekly AI usage allowance"] },
+    { id: "pro", name: "Pro", price: "—", limit: 15, features: ["15 combined uploads", "Higher queue priority", "1080p output", "Larger weekly AI usage allowance"] },
+    { id: "max", name: "Max", price: "—", limit: 70, features: ["70 combined uploads", "Highest queue priority", "Up to 4K output", "Largest weekly AI usage allowance"] },
+  ];
+  const currentPlan = state.usage?.planId || "free";
+
+  root.innerHTML = `
+    <div class="page-head"><h1>Plans</h1><p>Gift Visuals uses an AI usage system, not a simple video count — heavier edits use more usage.</p></div>
+    <div class="plan-grid">
+      ${plans
+        .map(
+          (p) => `
+        <div class="glass plan-card ${p.id === currentPlan ? "current" : ""}">
+          ${p.id === currentPlan ? '<span class="tag">Current plan</span>' : ""}
+          <h3>${p.name}</h3>
+          <div class="plan-limit"><b>${p.limit}</b> combined uploads per project</div>
+          <ul>${p.features.map((f) => `<li>${icon("spark")}${f}</li>`).join("")}</ul>
+          <button class="btn ${p.id === currentPlan ? "" : "btn-primary"}" data-plan="${p.id}" ${p.id === currentPlan ? "disabled" : ""}>
+            ${p.id === currentPlan ? "Current plan" : state.user ? "Switch plan" : "Sign in to choose"}
+          </button>
+        </div>`
+        )
+        .join("")}
+    </div>
+    <p class="hint" style="margin-top:18px;">Weekly usage resets every Saturday at 12:00 PM WAT. Billing and payments are coming soon — plan switching here is provisional while payments are being built.</p>
+  `;
+
+  root.querySelectorAll("[data-plan]").forEach((btn) =>
+    btn.addEventListener("click", async () => {
+      if (!state.user) return openAuthModal("signup");
+      try {
+        state.usage = await api("/dev/set-plan", { method: "POST", body: { planId: btn.dataset.plan } });
+        renderPlansPage(root);
+      } catch (err) {
+        alert(err.message);
+      }
+    })
+  );
+}
+
+/* ---------------------------------------------------------------------- */
+/* Profile                                                                  */
+/* ---------------------------------------------------------------------- */
+let profileTab = "profile";
+function renderProfilePage(root) {
+  if (!state.user) {
+    root.innerHTML = `
+      <div class="empty-state glass">
+        ${icon("profile")}
+        <h3>Sign in to view your profile</h3>
+        <p>Track your plan, usage and billing status.</p>
+        <button class="btn btn-primary" id="profileSignIn" style="margin-top:16px;">Sign in</button>
+      </div>`;
+    document.getElementById("profileSignIn").onclick = () => openAuthModal("login");
+    return;
+  }
+
+  const u = state.user;
+  const usage = state.usage;
+  const initial = (u.displayName || u.email || "?")[0].toUpperCase();
+
+  root.innerHTML = `
+    <div class="page-head"><h1>Profile</h1><p>Manage your account, plan and usage.</p></div>
+    <div class="glass profile-header">
+      <div class="avatar-lg">${u.photoURL ? `<img src="${u.photoURL}" alt="" />` : initial}</div>
+      <div>
+        <h2>${escapeHtml(u.displayName || "Unnamed user")}</h2>
+        <p>${escapeHtml(u.email || "")}</p>
+      </div>
+    </div>
+
+    <div class="tab-row" style="margin-top:20px;">
+      <button class="tab-btn ${profileTab === "profile" ? "active" : ""}" data-tab="profile">Profile</button>
+      <button class="tab-btn ${profileTab === "plan" ? "active" : ""}" data-tab="plan">Plan</button>
+      <button class="tab-btn ${profileTab === "billing" ? "active" : ""}" data-tab="billing">Billing</button>
+    </div>
+    <div id="profileTabContent"></div>
+  `;
+
+  root.querySelectorAll("[data-tab]").forEach((btn) =>
+    btn.addEventListener("click", () => { profileTab = btn.dataset.tab; renderProfilePage(root); })
+  );
+
+  const content = document.getElementById("profileTabContent");
+  if (profileTab === "profile") {
+    content.innerHTML = `
+      <div class="glass panel">
+        <div class="info-row"><span class="k">Name</span><span class="v">${escapeHtml(u.displayName || "—")} <button class="link-btn" id="editNameBtn">Edit</button></span></div>
+        <div class="info-row"><span class="k">Email</span><span class="v">${escapeHtml(u.email || "—")}</span></div>
+        <div class="info-row"><span class="k">Sign-in method</span><span class="v">${u.providerData?.[0]?.providerId === "google.com" ? "Google" : "Email"}</span></div>
+        <div class="info-row"><span class="k">Sign out</span><button class="link-btn" id="signOutBtn">Sign out</button></div>
+      </div>`;
+    document.getElementById("editNameBtn").onclick = async () => {
+      const name = prompt("Update your name", u.displayName || "");
+      if (name === null) return;
+      await updateProfile(auth.currentUser, { displayName: name });
+      state.user = auth.currentUser;
+      renderProfilePage(root);
+      renderAccountSlot();
+    };
+    document.getElementById("signOutBtn").onclick = () => signOut(auth);
+  } else if (profileTab === "plan") {
+    const remainingPct = usage ? Math.round((usage.remainingUnits / usage.usageLimitPerWeek) * 100) : 0;
+    content.innerHTML = `
+      <div class="glass panel">
+        <div class="info-row"><span class="k">Current plan</span><span class="v">${usage ? usage.planName : "—"}</span></div>
+        <div class="info-row"><span class="k">Weekly reset</span><span class="v">${usage ? new Date(usage.nextResetAt).toLocaleString() : "—"}</span></div>
+        <div class="usage-meter">
+          <div class="info-row" style="border:none; padding-bottom:0;"><span class="k">Usage remaining</span><span class="v">${usage ? `${usage.remainingUnits} / ${usage.usageLimitPerWeek}` : "—"}</span></div>
+          <div class="bar"><div style="width:${remainingPct}%"></div></div>
+        </div>
+        <button class="btn btn-primary" data-link href="/plans" style="margin-top:16px;">Change plan</button>
+      </div>`;
+  } else {
+    content.innerHTML = `
+      <div class="glass panel">
+        <div class="info-row"><span class="k">Current plan</span><span class="v">${usage ? usage.planName : "—"}</span></div>
+        <div class="info-row"><span class="k">Billing status</span><span class="v">No payment method on file</span></div>
+        <p class="billing-note">Payment processing isn't live yet. When it is, you'll be able to upgrade, downgrade and manage billing right here.</p>
+        <button class="btn" disabled style="margin-top:14px;">Manage billing (coming soon)</button>
+      </div>`;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Auth modal                                                               */
+/* ---------------------------------------------------------------------- */
+function openAuthModal(mode = "login", note) {
+  const root = document.getElementById("modalRoot");
+  const isSignup = mode === "signup";
+  root.innerHTML = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal glass-strong">
+        <button class="modal-close" id="modalClose" aria-label="Close">${icon("close")}</button>
+        <h2>${isSignup ? "Create your account" : "Welcome back"}</h2>
+        <p class="sub">${note || (isSignup ? "Create a free account to start editing." : "Sign in to continue to Gift Visuals.")}</p>
+        <form id="authForm">
+          ${isSignup ? `<div class="field"><label for="nameField">Name</label><input id="nameField" type="text" autocomplete="name" /></div>` : ""}
+          <div class="field"><label for="emailField">Email</label><input id="emailField" type="email" required autocomplete="email" /></div>
+          <div class="field"><label for="passwordField">Password</label><input id="passwordField" type="password" required minlength="6" autocomplete="${isSignup ? "new-password" : "current-password"}" /></div>
+          <button class="btn btn-primary auth-submit" type="submit">${isSignup ? "Create account" : "Sign in"}</button>
+        </form>
+        <div id="authMsg"></div>
+        <div class="auth-divider">or</div>
+        <button class="btn google-btn" id="googleBtn">${icon("google")} Continue with Google</button>
+        <div class="auth-switch">
+          ${isSignup ? "Already have an account?" : "New to Gift Visuals?"}
+          <button id="switchModeBtn">${isSignup ? "Sign in" : "Create an account"}</button>
+        </div>
+        ${!isSignup ? `<div class="auth-switch"><button id="forgotBtn">Forgot password?</button></div>` : ""}
+      </div>
+    </div>`;
+
+  const close = () => { root.innerHTML = ""; };
+  document.getElementById("modalClose").onclick = close;
+  document.getElementById("modalOverlay").addEventListener("click", (e) => { if (e.target.id === "modalOverlay") close(); });
+  document.getElementById("switchModeBtn").onclick = () => openAuthModal(isSignup ? "login" : "signup", note);
+  const forgotBtn = document.getElementById("forgotBtn");
+  if (forgotBtn) forgotBtn.onclick = async () => {
+    const email = document.getElementById("emailField").value;
+    if (!email) return setAuthMsg("Enter your email above first.", true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setAuthMsg("Password reset email sent.", false);
+    } catch (err) {
+      setAuthMsg(friendlyAuthError(err), true);
+    }
+  };
+
+  document.getElementById("authForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("emailField").value.trim();
+    const password = document.getElementById("passwordField").value;
+    try {
+      if (isSignup) {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const name = document.getElementById("nameField").value.trim();
+        if (name) await updateProfile(cred.user, { displayName: name });
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+      close();
+    } catch (err) {
+      setAuthMsg(friendlyAuthError(err), true);
+    }
+  });
+
+  document.getElementById("googleBtn").addEventListener("click", async () => {
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+      close();
+    } catch (err) {
+      setAuthMsg(friendlyAuthError(err), true);
+    }
+  });
+}
+
+function setAuthMsg(msg, isError) {
+  const el = document.getElementById("authMsg");
+  if (el) el.innerHTML = `<div class="${isError ? "auth-error" : "auth-note"}">${escapeHtml(msg)}</div>`;
+}
+
+function friendlyAuthError(err) {
+  const map = {
+    "auth/email-already-in-use": "That email is already registered — try signing in instead.",
+    "auth/invalid-email": "That email address doesn't look right.",
+    "auth/weak-password": "Please use a password with at least 6 characters.",
+    "auth/user-not-found": "We couldn't find an account with that email.",
+    "auth/wrong-password": "That password doesn't match this account.",
+    "auth/invalid-credential": "Incorrect email or password.",
+    "auth/popup-closed-by-user": "Sign-in was cancelled.",
+    "auth/too-many-requests": "Too many attempts — please wait a moment and try again.",
+  };
+  return map[err.code] || "Something went wrong. Please try again.";
+}
+
+/* ---------------------------------------------------------------------- */
+/* Auth state + boot                                                        */
+/* ---------------------------------------------------------------------- */
+async function refreshUsage() {
+  if (!state.user) { state.usage = null; return; }
+  try { state.usage = await api("/usage"); } catch { state.usage = null; }
+}
+
+onAuthStateChanged(auth, async (user) => {
+  state.user = user;
+  state.draftId = null;
+  state.assets = [];
+  await refreshUsage();
+  render();
+});
+
+render();
+</script>

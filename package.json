@@ -1,0 +1,18 @@
+{
+  "name": "gift-visuals",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Gift Visuals — AI-powered video creation and editing platform.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^2.0.1"
+  }
+}
