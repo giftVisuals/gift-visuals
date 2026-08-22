@@ -847,7 +847,8 @@ function pollJob(jobId) {
         clearInterval(state.jobPollHandle);
         statusEl.innerHTML = `
           <div class="auth-note">Your video is ready.</div>
-          <a class="btn btn-primary" style="display:block;text-align:center;margin-top:10px;" href="/api/jobs/${jobId}/download">Download video</a>`;
+          <button class="btn btn-primary create-cta" id="downloadVideoBtn">Download video</button>`;
+        document.getElementById("downloadVideoBtn").addEventListener("click", () => downloadJobVideo(jobId));
         refreshUsage();
         return;
       }
@@ -865,6 +866,38 @@ function pollJob(jobId) {
 function showToastError(msg) {
   const statusEl = document.getElementById("jobStatus");
   if (statusEl) statusEl.innerHTML = `<div class="auth-error">${escapeHtml(msg)}</div>`;
+}
+
+// A plain <a href> to an authenticated endpoint won't carry our Firebase
+// bearer token — the browser navigates there with no auth header at all.
+// Fetch it ourselves (with the token) and hand the browser the resulting
+// blob instead.
+async function downloadJobVideo(jobId) {
+  const btn = document.getElementById("downloadVideoBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "Preparing download..."; }
+  try {
+    if (!state.user) throw new Error("Please sign in to continue.");
+    const res = await fetch(`/api/jobs/${jobId}/download`, {
+      headers: { Authorization: `Bearer ${await state.user.getIdToken()}` },
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || "This video isn't ready yet.");
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "gift-visuals-edit.mp4";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  } catch (err) {
+    showToastError(err.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "Download video"; }
+  }
 }
 
 /* ---------------------------------------------------------------------- */
