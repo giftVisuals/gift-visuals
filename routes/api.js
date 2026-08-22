@@ -161,6 +161,7 @@ router.post(
     }
 
     const newAssets = [];
+    const failures = [];
     for (const file of files) {
       const isVideo = ALLOWED_VIDEO_MIME.has(file.mimetype);
       const asset = {
@@ -178,8 +179,13 @@ router.post(
         try {
           const info = await ffmpegEngine.probe(file.path);
           Object.assign(asset, info);
-        } catch {
-          await fs.rm(file.path, { force: true });
+        } catch (err) {
+          // Log the real cause server-side (e.g. ffmpeg/ffprobe missing from
+          // PATH, or a corrupt upload) instead of hiding it — a silently
+          // dropped file with no explanation is worse than a visible error.
+          console.error(`ffprobe failed for "${file.originalname}":`, err.message, err.stderr?.slice(-500) || "");
+          await fs.rm(file.path, { force: true }).catch(() => {});
+          failures.push(file.originalname);
           continue;
         }
       }
@@ -187,9 +193,20 @@ router.post(
     }
 
     req.draft.assets.push(...newAssets);
+
+    if (failures.length > 0 && newAssets.length === 0) {
+      return publicError(
+        res,
+        502,
+        `We couldn't process ${failures.length === 1 ? `"${failures[0]}"` : `${failures.length} of your files`}. Please try a different video file or format.`,
+        "PROBE_FAILED"
+      );
+    }
+
     res.json({
       assets: req.draft.assets.map(stripInternalPaths),
       mediaLimit: plan.mediaLimit,
+      skipped: failures,
     });
   })
 );

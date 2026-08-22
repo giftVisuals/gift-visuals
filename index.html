@@ -730,6 +730,9 @@ async function handleFiles(fileList) {
     state.assets = data.assets;
     renderMediaGrid();
     refreshEstimate();
+    if (data.skipped && data.skipped.length > 0) {
+      showToastError(`Couldn't process: ${data.skipped.join(", ")}. The rest uploaded fine.`);
+    }
   } catch (err) {
     showToastError(err.message);
   }
