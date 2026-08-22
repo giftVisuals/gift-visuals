@@ -27,6 +27,7 @@ function asyncHandler(fn) {
 }
 
 const UPLOAD_ROOT = path.join(os.tmpdir(), "gift-visuals-uploads");
+const OUTPUT_RETENTION_MS = 2 * 60 * 60 * 1000; // how long a finished render stays downloadable
 
 const ALLOWED_VIDEO_MIME = new Set(["video/mp4", "video/quicktime", "video/webm", "video/x-matroska"]);
 const ALLOWED_IMAGE_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -375,6 +376,16 @@ async function processRenderJob({ jobHandle, uid, assets, prompt, options, targe
       if (qc.pass || pass === maxPasses) {
         usageStore.consume(uid, estimatedUnits);
         queue.updateProgress(jobHandle.id, 100);
+        // Intermediate segment/transcode files (often many, and each roughly
+        // the size of the source footage) are useless once the final file
+        // exists — leaving them on disk was quietly filling up Railway's
+        // ephemeral volume across repeated renders and dragging down disk
+        // I/O for everything else in the app, uploads included. Keep only
+        // the final output, and even that only for a retention window.
+        await ffmpegEngine.cleanupIntermediates(rendered.workDir, rendered.outputPath);
+        setTimeout(() => {
+          ffmpegEngine.cleanupWorkDir(rendered.workDir);
+        }, OUTPUT_RETENTION_MS).unref();
         return { outputPath: rendered.outputPath, durationSeconds: rendered.durationSeconds, usageConsumed: estimatedUnits };
       }
       await ffmpegEngine.cleanupWorkDir(rendered.workDir);
@@ -383,6 +394,11 @@ async function processRenderJob({ jobHandle, uid, assets, prompt, options, targe
       lastError = err;
     }
   }
+
+  // Every pass failed — nothing worth keeping. renderEditPlan names its work
+  // directory deterministically from the job id, so it can be cleaned up
+  // even if the failure happened before a result object existed to read it from.
+  await ffmpegEngine.cleanupWorkDir(path.join(os.tmpdir(), "gift-visuals", jobHandle.id));
 
   const failure = new Error(lastError ? lastError.message : "Render failed after retries.");
   failure.stderr = lastError?.stderr;

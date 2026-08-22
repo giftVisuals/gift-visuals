@@ -237,6 +237,13 @@
     position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 8px;
     background: linear-gradient(0deg, rgba(0,0,0,.62), transparent); color: #fff; font-size: 10.5px;
   }
+  .upload-overlay {
+    position: absolute; inset: 0; background: rgba(16,24,44,.55);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 0 10px;
+  }
+  .upload-progress-track { width: 100%; height: 6px; border-radius: 999px; background: rgba(255,255,255,.3); overflow: hidden; }
+  .upload-progress-bar { height: 100%; width: 0%; background: #fff; transition: width .15s linear; }
+  .upload-progress-text { color: #fff; font-size: 10.5px; font-weight: 600; }
 
   textarea.prompt-input {
     width: 100%; margin-top: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-strong);
@@ -709,6 +716,48 @@ function wireCreatePage() {
   if (activeJobId) pollJob(activeJobId);
 }
 
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes)) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ["KB", "MB", "GB"];
+  let value = bytes / 1024;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+  return `${value.toFixed(value < 10 ? 1 : 0)} ${units[unitIndex]}`;
+}
+
+// fetch() has no upload progress event — XHR is the only way to report real
+// bytes-sent progress for a file upload in the browser.
+async function uploadWithProgress(pathName, formData, onProgress) {
+  const token = state.user ? await state.user.getIdToken() : null;
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `/api${pathName}`);
+    if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(e.loaded, e.total);
+    };
+    xhr.onload = () => {
+      let data = {};
+      try { data = JSON.parse(xhr.responseText || "{}"); } catch {}
+      if (xhr.status >= 200 && xhr.status < 300) resolve(data);
+      else reject(new Error(data.error || "Upload failed. Please try again."));
+    };
+    xhr.onerror = () => reject(new Error("Upload failed. Please check your connection and try again."));
+    xhr.send(formData);
+  });
+}
+
+function updateUploadProgressUI(batchId, loaded, total) {
+  const pct = total > 0 ? Math.min(100, Math.round((loaded / total) * 100)) : 0;
+  const sizeText = `${formatBytes(loaded)} / ${formatBytes(total)}`;
+  document.querySelectorAll(`[data-progress-bar="${batchId}"]`).forEach((el) => { el.style.width = `${pct}%`; });
+  document.querySelectorAll(`[data-progress-text="${batchId}"]`).forEach((el) => { el.textContent = sizeText; });
+}
+
 async function handleFiles(fileList) {
   const files = Array.from(fileList || []);
   if (files.length === 0) return;
@@ -722,11 +771,31 @@ async function handleFiles(fileList) {
     return;
   }
 
+  // Show every selected file immediately — with a local preview, its size,
+  // and a live progress bar — instead of leaving the UI blank while a slow
+  // connection uploads in the background.
+  const batchId = `batch-${Math.random().toString(36).slice(2)}`;
+  const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
+  const placeholders = files.map((f) => ({
+    id: `${batchId}-${Math.random().toString(36).slice(2)}`,
+    type: f.type.startsWith("image") ? "image" : "video",
+    originalName: f.name,
+    sizeBytes: f.size,
+    previewUrl: URL.createObjectURL(f),
+    _uploading: true,
+    _batchId: batchId,
+  }));
+  state.assets.push(...placeholders);
+  renderMediaGrid();
+  updateUploadProgressUI(batchId, 0, totalBytes);
+
   try {
     await ensureDraft();
     const form = new FormData();
     files.forEach((f) => form.append("media", f));
-    const data = await api(`/drafts/${state.draftId}/media`, { method: "POST", body: form, isForm: true });
+    const data = await uploadWithProgress(`/drafts/${state.draftId}/media`, form, (loaded, total) => {
+      updateUploadProgressUI(batchId, loaded, total);
+    });
     state.assets = data.assets;
     renderMediaGrid();
     refreshEstimate();
@@ -734,6 +803,8 @@ async function handleFiles(fileList) {
       showToastError(`Couldn't process: ${data.skipped.join(", ")}. The rest uploaded fine.`);
     }
   } catch (err) {
+    state.assets = state.assets.filter((a) => a._batchId !== batchId);
+    renderMediaGrid();
     showToastError(err.message);
   }
 }
@@ -746,15 +817,27 @@ function renderMediaGrid() {
     return;
   }
   grid.innerHTML = state.assets
-    .map(
-      (a, i) => `
-    <div class="media-card" draggable="true" data-index="${i}">
+    .map((a, i) => {
+      const preview = a.previewUrl
+        ? a.type === "image"
+          ? `<img class="thumb" src="${a.previewUrl}" alt="" />`
+          : `<video class="thumb" src="${a.previewUrl}" muted preload="metadata"></video>`
+        : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;">${icon(a.type === "video" ? "video" : "image")}</div>`;
+      const uploadingOverlay = a._uploading
+        ? `<div class="upload-overlay">
+             <div class="upload-progress-track"><div class="upload-progress-bar" data-progress-bar="${a._batchId}" style="width:0%"></div></div>
+             <span class="upload-progress-text" data-progress-text="${a._batchId}">${formatBytes(a.sizeBytes)}</span>
+           </div>`
+        : "";
+      return `
+    <div class="media-card" draggable="${!a._uploading}" data-index="${i}">
       <div class="badge">${a.type}</div>
-      <button class="remove" data-remove="${a.id}" aria-label="Remove ${escapeHtml(a.originalName)}">${icon("close")}</button>
-      ${a.type === "image" && a.previewUrl ? `<img class="thumb" src="${a.previewUrl}" alt="" />` : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;">${icon(a.type === "video" ? "video" : "image")}</div>`}
-      <div class="meta">${escapeHtml(a.originalName)}${a.durationSeconds ? ` · ${Math.round(a.durationSeconds)}s` : ""}</div>
-    </div>`
-    )
+      ${!a._uploading ? `<button class="remove" data-remove="${a.id}" aria-label="Remove ${escapeHtml(a.originalName)}">${icon("close")}</button>` : ""}
+      ${preview}
+      ${uploadingOverlay}
+      <div class="meta">${escapeHtml(a.originalName)}${a.durationSeconds ? ` · ${Math.round(a.durationSeconds)}s` : a.sizeBytes ? ` · ${formatBytes(a.sizeBytes)}` : ""}</div>
+    </div>`;
+    })
     .join("");
 
   grid.querySelectorAll("[data-remove]").forEach((btn) =>
@@ -771,7 +854,7 @@ function renderMediaGrid() {
   );
 
   let dragSrc = null;
-  grid.querySelectorAll(".media-card").forEach((card) => {
+  grid.querySelectorAll(".media-card[draggable='true']").forEach((card) => {
     card.addEventListener("dragstart", () => { dragSrc = Number(card.dataset.index); card.classList.add("dragging"); });
     card.addEventListener("dragend", () => card.classList.remove("dragging"));
     card.addEventListener("dragover", (e) => e.preventDefault());
