@@ -309,7 +309,11 @@ async function processRenderJob({ jobHandle, uid, assets, prompt, options, targe
       const result = await groq.transcribe(firstVideoWithAudio.path);
       transcript = result;
     } catch (err) {
-      transcript = null; // Non-fatal: the AI edits without a transcript instead of failing the job.
+      // Non-fatal: the AI edits without a transcript instead of failing the
+      // job — but still log it, since a missing/invalid GROQ_API_KEY shows
+      // up here first.
+      console.error(`[job ${jobHandle.id}] transcription failed (continuing without it):`, err.message);
+      transcript = null;
     }
   }
   queue.updateProgress(jobHandle.id, 25);
@@ -361,11 +365,13 @@ async function processRenderJob({ jobHandle, uid, assets, prompt, options, targe
       }
       await ffmpegEngine.cleanupWorkDir(rendered.workDir);
     } catch (err) {
+      console.error(`[job ${jobHandle.id}] pass ${pass}/${maxPasses} failed:`, err.message, err.stderr ? `\n${err.stderr.slice(-2000)}` : "");
       lastError = err;
     }
   }
 
   const failure = new Error(lastError ? lastError.message : "Render failed after retries.");
+  failure.stderr = lastError?.stderr;
   failure.userMessage = "We couldn't finish this video. Please try again.";
   throw failure;
 }
